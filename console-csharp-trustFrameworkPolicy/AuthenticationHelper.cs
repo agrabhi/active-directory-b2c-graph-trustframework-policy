@@ -17,8 +17,14 @@ namespace console_csharp_trustframeworkpolicy
         // For now, this API is only accessible on tenants that have been whitelisted
         public static string[] Scopes = { "User.Read" };
 
-        public static PublicClientApplication IdentityClientApp = new PublicClientApplication(Inputs.ClientId);
-        public static string TokenForUser = null;
+        static TokenCache TokenCache = new TokenCache();
+
+        public static PublicClientApplication IdentityClientApp = new PublicClientApplication(
+            Inputs.ClientId, 
+            string.Format(Constants.AuthorityUriFormat, Inputs.TenantId),
+            TokenCache);
+
+        public static string AccessTokenForUser = null;
         public static DateTimeOffset Expiration;
 
         private static GraphServiceClient graphClient = null;
@@ -35,7 +41,7 @@ namespace console_csharp_trustframeworkpolicy
                     new DelegateAuthenticationProvider(
                         async (requestMessage) =>
                         {
-                            var token = await GetTokenForUserAsync();
+                            var token = await GetAccessTokenForUserAsync();
                             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
                             // This header has been added to identify usage of this sample in the Microsoft Graph service.  You are free to remove it without impacting functionlity.
                             requestMessage.Headers.Add("SampleID", "console-csharp-trustframeworkpolicy");
@@ -53,14 +59,14 @@ namespace console_csharp_trustframeworkpolicy
 
         public static void AddHeaders(HttpRequestMessage requestMessage)
         {
-            if(TokenForUser == null)
+            if(AccessTokenForUser == null)
             {
                 Debug.WriteLine("Call GetAuthenticatedClientForUser first");
             }
 
             try
             {
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", TokenForUser);
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", AccessTokenForUser);
                 requestMessage.Headers.Add("SampleID", "console-csharp-trustframeworkpolicy");
             }
             catch (Exception ex)
@@ -73,27 +79,27 @@ namespace console_csharp_trustframeworkpolicy
         /// Get Token for User.
         /// </summary>
         /// <returns>Token for user.</returns>
-        public static async Task<string> GetTokenForUserAsync()
+        public static async Task<string> GetAccessTokenForUserAsync()
         {
             AuthenticationResult authResult;
             try
             {
                 authResult = await IdentityClientApp.AcquireTokenSilentAsync(Scopes, IdentityClientApp.Users.First());
-                TokenForUser = authResult.AccessToken;
+                AccessTokenForUser = authResult.AccessToken;                
             }
 
             catch (Exception)
             {
-                if (TokenForUser == null || Expiration <= DateTimeOffset.UtcNow.AddMinutes(5))
+                if (AccessTokenForUser == null || Expiration <= DateTimeOffset.UtcNow.AddMinutes(5))
                 {
                     authResult = await IdentityClientApp.AcquireTokenAsync(Scopes);
 
-                    TokenForUser = authResult.AccessToken;
+                    AccessTokenForUser = authResult.AccessToken;
                     Expiration = authResult.ExpiresOn;
                 }
             }
 
-            return TokenForUser;
+            return AccessTokenForUser;
         }
 
         /// <summary>
@@ -106,7 +112,7 @@ namespace console_csharp_trustframeworkpolicy
                 IdentityClientApp.Remove(user);
             }
             graphClient = null;
-            TokenForUser = null;
+            AccessTokenForUser = null;
         }
 
     }
