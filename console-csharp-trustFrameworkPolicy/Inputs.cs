@@ -11,10 +11,29 @@ namespace console_csharp_trustframeworkpolicy
     /// </summary>
     internal static class Inputs
     {
+        public static Commands Command { get; set; }
+
+
         /// <summary>
         /// Gets or sets the tenant identifier.
         /// </summary>
         public static string TenantId{ get; set; }
+
+        /// <summary>
+        /// Gets or sets the policy identifier.
+        /// </summary>
+        /// <value>
+        /// The policy identifier.
+        /// </value>
+        public static string PolicyId{ get; set; }
+
+        /// <summary>
+        /// Gets or sets the path.
+        /// </summary>
+        /// <value>
+        /// The path.
+        /// </value>
+        public static string Path{ get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.
@@ -27,6 +46,6 @@ namespace console_csharp_trustframeworkpolicy
         /// <summary>
         /// Gets or sets the tenant identifier.
         /// </summary>
-        public static string RefreshToken { get; set; }                
+        public static string RefreshToken { get; set; }     
     }
 }
