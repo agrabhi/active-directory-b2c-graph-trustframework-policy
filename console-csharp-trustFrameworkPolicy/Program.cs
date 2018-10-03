@@ -9,6 +9,8 @@ namespace console_csharp_trustframeworkpolicy
     {
         static void Main(string[] args)
         {
+            Console.ReadKey();
+
             // validate parameters
             if (!CheckValidParameters(args))
             {
@@ -35,10 +37,10 @@ namespace console_csharp_trustframeworkpolicy
                     case "-READ":
                     case "-UPDATE":
                     case "-DELETE":
-                        Inputs.Command = (Commands)Enum.Parse(typeof(Commands), inp.Remove(0, 1));
+                        Inputs.Command = (Commands)Enum.Parse(typeof(Commands), inp.Remove(0, 1).ToUpper());
                         break;
 
-                    case "-TENANT":
+                    case "-TENANTID":
                         // TODO: Length check here
                         i++;
                         Inputs.TenantId = args[i];

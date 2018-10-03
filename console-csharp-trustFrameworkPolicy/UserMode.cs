@@ -18,7 +18,7 @@ namespace console_csharp_trustframeworkpolicy
                 //*********************************************************************
                 // setup Microsoft Graph Client for delegated user.
                 //*********************************************************************
-                if (string.IsNullOrWhiteSpace(Inputs.ClientId))
+                if (!string.IsNullOrWhiteSpace(Inputs.ClientId))
                 {
                     client = AuthenticationHelper.GetAuthenticatedClientForUser();
                     return true;
