@@ -24,6 +24,11 @@ namespace console_csharp_trustframeworkpolicy
                 // Graph client does not yet support trustFrameworkPolicy, so using HttpClient to make rest calls
                 switch (args[0].ToUpper())
                 {
+                    case "Tokens":
+                        // Get access and refresh token
+                        request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
+                        break;
+
                     case "LIST":
                         // List all polcies using "GET /trustFrameworkPolicies"
                         request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
@@ -66,22 +71,6 @@ namespace console_csharp_trustframeworkpolicy
 
         public static bool CheckValidParameters(string[] args)
         {
-            if (Constants.ClientIdForUserAuthn.Equals("ENTER_YOUR_CLIENT_ID") ||
-                Constants.Tenant.Equals("ENTER_YOUR_TENANT_NAME"))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("1. Open 'Constants.cs'");
-                Console.WriteLine("2. Update 'ClientIdForUserAuthn'");
-                Console.WriteLine("3. Update 'Tenant'");
-                Console.WriteLine("");
-                Console.WriteLine("See README.md for detailed instructions.");
-                Console.WriteLine("");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("[press any key to exit]");
-                Console.ReadKey();
-                return false;
-            }
-
             if (args.Length <= 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;

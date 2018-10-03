@@ -18,7 +18,7 @@ namespace console_csharp_trustframeworkpolicy
                 //*********************************************************************
                 // setup Microsoft Graph Client for delegated user.
                 //*********************************************************************
-                if (Constants.ClientIdForUserAuthn != "ENTER_YOUR_CLIENT_ID")
+                if (string.IsNullOrWhiteSpace(Inputs.ClientId))
                 {
                     client = AuthenticationHelper.GetAuthenticatedClientForUser();
                     return true;
@@ -26,7 +26,7 @@ namespace console_csharp_trustframeworkpolicy
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("You haven't configured a value for ClientIdForUserAuthn in Constants.cs. Please follow the Readme instructions for configuring this application.");
+                    Console.WriteLine("Please input a value for clientID. Please follow the Readme instructions for configuring this application.");
                     Console.ResetColor();
                     Console.ReadKey();
                     return false;
