@@ -11,12 +11,24 @@ namespace console_csharp_trustframeworkpolicy
         {
             // validate parameters
             if (!CheckValidParameters(args))
+            {
                 return;
+            }
 
+            if (!ParseCommandLine(args))
+            {
+                return;
+            }
+
+            PerformCommand();
+        }
+
+        private static bool ParseCommandLine(string[] args)
+        {
             for (int i = 0; i < args.Length; i++)
             {
                 string inp = args[i];
-                switch(inp.ToUpper())
+                switch (inp.ToUpper())
                 {
                     case "-LIST":
                     case "-CREATE":
@@ -53,14 +65,14 @@ namespace console_csharp_trustframeworkpolicy
 
                     default:
                         PrintHelp(args);
-                        break;
+                        return false;                 
                 }
             }
 
-            PerformCommand(args);
+            return true;
         }
 
-        private static void PerformCommand(string[] args)
+        private static void PerformCommand()
         {
             HttpRequestMessage request = null;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
@@ -71,29 +83,29 @@ namespace console_csharp_trustframeworkpolicy
                 UserMode.LoginAsAdmin();
 
                 // Graph client does not yet support trustFrameworkPolicy, so using HttpClient to make rest calls
-                switch (args[0].ToUpper())
+                switch (Inputs.Command)
                 {
-                    case "-LIST":
+                    case Commands.LIST:
                         // List all polcies using "GET /trustFrameworkPolicies"
                         request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
                         break;
-                    case "-GET":
+                    case Commands.GET:
                         // Get a specific policy using "GET /trustFrameworkPolicies/{id}"
-                        request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
+                        request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
                         break;
-                    case "-CREATE":
+                    case Commands.CREATE:
                         // Create a policy using "POST /trustFrameworkPolicies" with XML in the body
-                        string xml = System.IO.File.ReadAllText(args[1]);
+                        string xml = System.IO.File.ReadAllText(Inputs.Path);
                         request = UserMode.HttpPost(Constants.TrustFrameworkPolicesUri, xml);
                         break;
-                    case "-UPDATE":
+                    case Commands.UPDATE:
                         // Update using "PUT /trustFrameworkPolicies/{id}" with XML in the body
-                        xml = System.IO.File.ReadAllText(args[2]);
-                        request = UserMode.HttpPutID(Constants.TrustFrameworkPolicyByIDUri, args[1], xml);
+                        xml = System.IO.File.ReadAllText(Inputs.Path);
+                        request = UserMode.HttpPutID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId, xml);
                         break;
-                    case "-DELETE":
+                    case Commands.DELETE:
                         // Delete using "DELETE /trustFrameworkPolicies/{id}"
-                        request = UserMode.HttpDeleteID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
+                        request = UserMode.HttpDeleteID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
                         break;
                     default:
                         return;
