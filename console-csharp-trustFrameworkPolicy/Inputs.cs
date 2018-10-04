@@ -44,11 +44,6 @@ namespace console_csharp_trustframeworkpolicy
         public static string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the reply URI.
-        /// </summary>
-        public static string ReplyUri { get; set; }
-
-        /// <summary>
         /// Gets or sets the tenant identifier.
         /// </summary>
         public static string RefreshToken { get; set; }     

@@ -65,12 +65,6 @@ namespace console_csharp_trustframeworkpolicy
                         Inputs.ClientId = args[i];
                         break;
 
-                    case "-REPLYURI":
-                        // TODO: Length check here
-                        i++;
-                        Inputs.ReplyUri = args[i];
-                        break;
-
                     default:
                         PrintHelp(args);
                         return false;                 
