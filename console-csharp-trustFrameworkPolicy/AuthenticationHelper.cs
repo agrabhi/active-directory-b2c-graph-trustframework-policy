@@ -17,12 +17,9 @@ namespace console_csharp_trustframeworkpolicy
         // For now, this API is only accessible on tenants that have been whitelisted
         public static string[] Scopes = { "User.Read" };
 
-        static TokenCache TokenCache = new TokenCache();
-
         public static PublicClientApplication IdentityClientApp = new PublicClientApplication(
-            Inputs.ClientId, 
-            string.Format(Constants.AuthorityUriFormat, Inputs.TenantId),
-            TokenCache);
+            Inputs.ClientId,
+            string.Format(Constants.AuthorityUriFormat, Inputs.TenantId));
 
         public static string AccessTokenForUser = null;
         public static DateTimeOffset Expiration;
