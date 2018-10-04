@@ -65,6 +65,12 @@ namespace console_csharp_trustframeworkpolicy
                         Inputs.ClientId = args[i];
                         break;
 
+                    case "-REPLYURI":
+                        // TODO: Length check here
+                        i++;
+                        Inputs.ReplyUri = args[i];
+                        break;
+
                     default:
                         PrintHelp(args);
                         return false;                 
@@ -166,16 +172,16 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("- Square brackets indicate optional arguments");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Tokens                       : {0} Tokens -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("List                         : {0} -List -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("Get                          : {0} -Get -p [PolicyID] -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("                             : {0} -Get -p B2C_1A_PolicyName -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("Create                       : {0} -Create -path [RelativePathToXML] -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("                             : {0} -Create -path policytemplate.xml -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("Update                       : {0} -Update -p [PolicyID] [RelativePathToXML] -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("                             : {0} -Update -p B2C_1A_PolicyName -path updatepolicy.xml -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("Delete                       : {0} -Delete -p [PolicyID] -tenant {Tenant} -appId {appId}", appName);
-            Console.WriteLine("                             : {0} -Delete -p B2C_1A_PolicyName -tenant {Tenant} -appId {appId}", appName);
+            Console.WriteLine("Tokens                       : {0} Tokens -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("List                         : {0} -List -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("Get                          : {0} -Get -p [PolicyID] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("                             : {0} -Get -p B2C_1A_PolicyName -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("Create                       : {0} -Create -path [RelativePathToXML] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("                             : {0} -Create -path policytemplate.xml -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("Update                       : {0} -Update -p [PolicyID] [RelativePathToXML] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("                             : {0} -Update -p B2C_1A_PolicyName -path updatepolicy.xml -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("Delete                       : {0} -Delete -p [PolicyID] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
+            Console.WriteLine("                             : {0} -Delete -p B2C_1A_PolicyName -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
             Console.WriteLine("Help                         : {0} -Help", appName);
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
