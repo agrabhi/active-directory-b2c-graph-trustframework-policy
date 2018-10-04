@@ -92,7 +92,7 @@ namespace console_csharp_trustframeworkpolicy
                 {
                     case Commands.LIST:
                         {
-                            // List all polcies using "GET /trustFrameworkPolicies"
+                            // List all policies using "GET /trustFrameworkPolicies"
                             request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
                             var response = SendRequest(request);
                             PrintListOfPolicies(response);
@@ -151,9 +151,12 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="response">The response.</param>
         private static void PrintGeneric(string ops, HttpResponseMessage response)
         {
+            string content = response.Content.ReadAsStringAsync().Result;
+
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Error Calling the Graph API HTTP Status={0}", response.StatusCode);
+                Console.WriteLine(content);
                 return;
             }
 
@@ -167,13 +170,15 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="response">The response.</param>
         private static void SavePolicyToFile(HttpResponseMessage response)
         {
+            string content = response.Content.ReadAsStringAsync().Result;
+
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Error Calling the Graph API HTTP Status={0}", response.StatusCode);
+                Console.WriteLine(content);
                 return;
             }
 
-            string content = response.Content.ReadAsStringAsync().Result;
             File.WriteAllText(Inputs.Path, content);
         }
 
@@ -183,13 +188,14 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="response">The response.</param>
         private static void PrintListOfPolicies(HttpResponseMessage response)
         {
+            string content = response.Content.ReadAsStringAsync().Result;
+
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Error Calling the Graph API HTTP Status={0}", response.StatusCode);
+                Console.WriteLine(content);
                 return;
-            }
-
-            string content = response.Content.ReadAsStringAsync().Result;
+            }            
 
             JObject obj = JObject.Parse(content);
             JArray list = (JArray) obj["value"];
