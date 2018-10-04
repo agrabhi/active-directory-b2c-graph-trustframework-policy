@@ -104,6 +104,7 @@ namespace console_csharp_trustframeworkpolicy
                             request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
                             var response = SendRequest(request);
                             SavePolicyToFile(response);
+                            PrintGeneric("Get operation ", response);
                             break;
                         }
                     case Commands.CREATE:
@@ -156,7 +157,7 @@ namespace console_csharp_trustframeworkpolicy
                 return;
             }
 
-            Console.WriteLine($"{ops} completes successfully");
+            Console.WriteLine($"{ops} completed successfully");
 
         }
 
