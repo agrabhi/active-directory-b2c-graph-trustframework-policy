@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using active_directory_wpf_msgraph_v2;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace console_csharp_trustframeworkpolicy
@@ -40,6 +42,7 @@ namespace console_csharp_trustframeworkpolicy
                     case "-GET":
                     case "-UPDATE":
                     case "-DELETE":
+                    case "-GETTOKENS":
                         Inputs.Command = (Commands)Enum.Parse(typeof(Commands), inp.Remove(0, 1).ToUpper());
                         break;
 
@@ -47,6 +50,12 @@ namespace console_csharp_trustframeworkpolicy
                         // TODO: Length check here
                         i++;
                         Inputs.TenantId = args[i];
+                        break;
+
+                    case "-USETOKENS":
+                        // TODO: Length check here
+                        i++;
+                        Inputs.Tokens = args[i];
                         break;
 
                     case "-P":
@@ -84,6 +93,8 @@ namespace console_csharp_trustframeworkpolicy
 
             try
             {
+                TokenCacheHelper.CacheContent = Encoding.Default.GetBytes(Inputs.Tokens);
+
                 // Login as global admin of the Azure AD B2C tenant
                 UserMode.LoginAsAdmin();
 
@@ -133,6 +144,11 @@ namespace console_csharp_trustframeworkpolicy
                             PrintGeneric("Delete operation", response);
                             break;
                         }
+                    case Commands.GETTOKENS:
+                        {
+                            PrintTokens();
+                            break;
+                        }
                     default:
                         return;
                 }
@@ -142,6 +158,23 @@ namespace console_csharp_trustframeworkpolicy
                 Print(request);
                 Console.WriteLine("\nError {0} {1}", e.Message, e.InnerException != null ? e.InnerException.Message : "");
             }
+        }
+
+        /// <summary>
+        /// Prints the tokens.
+        /// </summary>
+        private static void PrintTokens()
+        {
+            //string token = AuthenticationHelper.GetAccessTokenForUserAsync().Result;
+            // Console.WriteLine($"Access token: Bearer {token}");
+
+            string cacheContent = System.Text.Encoding.Default.GetString(TokenCacheHelper.CacheContent);
+
+            Console.WriteLine("--------------Token cache------");
+            Console.Write(cacheContent);
+
+            //var obj = JArray.Parse(cacheContent);
+            //Console.Write(obj.ToString(Newtonsoft.Json.Formatting.Indented));
         }
 
         /// <summary>

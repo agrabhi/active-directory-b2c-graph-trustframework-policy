@@ -17,5 +17,7 @@ namespace console_csharp_trustframeworkpolicy
         UPDATE,
 
         DELETE,
+
+        GETTOKENS,
     }
 }

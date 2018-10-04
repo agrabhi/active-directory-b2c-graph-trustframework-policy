@@ -46,6 +46,6 @@ namespace console_csharp_trustframeworkpolicy
         /// <summary>
         /// Gets or sets the tenant identifier.
         /// </summary>
-        public static string RefreshToken { get; set; }     
+        public static string Tokens { get; set; }     
     }
 }

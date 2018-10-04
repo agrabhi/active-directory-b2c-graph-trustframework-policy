@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
+using active_directory_wpf_msgraph_v2;
 
 namespace console_csharp_trustframeworkpolicy
 {
@@ -19,7 +20,8 @@ namespace console_csharp_trustframeworkpolicy
 
         public static PublicClientApplication IdentityClientApp = new PublicClientApplication(
             Inputs.ClientId,
-            string.Format(Constants.AuthorityUriFormat, Inputs.TenantId));
+            string.Format(Constants.AuthorityUriFormat, Inputs.TenantId),
+            TokenCacheHelper.GetUserCache());
 
         public static string AccessTokenForUser = null;
         public static DateTimeOffset Expiration;
