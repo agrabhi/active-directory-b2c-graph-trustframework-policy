@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -88,9 +90,13 @@ namespace console_csharp_trustframeworkpolicy
                 switch (Inputs.Command)
                 {
                     case Commands.LIST:
-                        // List all polcies using "GET /trustFrameworkPolicies"
-                        request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
-                        break;
+                        {
+                            // List all polcies using "GET /trustFrameworkPolicies"
+                            request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
+                            var response = SendRequest(request);
+                            PrintListOfPolicies(response);
+                            break;
+                        }
                     case Commands.GET:
                         // Get a specific policy using "GET /trustFrameworkPolicies/{id}"
                         request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
@@ -112,19 +118,49 @@ namespace console_csharp_trustframeworkpolicy
                     default:
                         return;
                 }
-
-                Print(request);
-
-                HttpClient httpClient = new HttpClient();
-                Task<HttpResponseMessage> response = httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
-
-                Print(response);
             }
             catch (Exception e)
             {
                 Print(request);
                 Console.WriteLine("\nError {0} {1}", e.Message, e.InnerException != null ? e.InnerException.Message : "");
             }
+        }
+
+        /// <summary>
+        /// Prints the list of policies.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        private static void PrintListOfPolicies(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Error Calling the Graph API HTTP Status={0}", response.StatusCode);
+                return;
+            }
+
+            string content = response.Content.ReadAsStringAsync().Result;
+
+            JObject obj = JObject.Parse(content);
+            JArray list = (JArray) obj["value"];
+
+            Console.WriteLine("\n\nFollowing custom policies exist in the tenant");
+
+            foreach (JToken token in list)
+            {
+                // policyList.Add(token["id"].ToString());
+                Console.WriteLine(token["id"].ToString());
+            }
+        }
+
+        /// <summary>
+        /// Sends the request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        private static HttpResponseMessage SendRequest(HttpRequestMessage request)
+        {
+            HttpClient httpClient = new HttpClient();
+            Task<HttpResponseMessage> response = httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+            return response.Result;
         }
 
         public static bool CheckValidParameters(string[] args)
