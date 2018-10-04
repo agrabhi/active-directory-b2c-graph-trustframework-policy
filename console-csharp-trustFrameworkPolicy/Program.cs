@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace console_csharp_trustframeworkpolicy
                 {
                     case "-LIST":
                     case "-CREATE":
-                    case "-READ":
+                    case "-GET":
                     case "-UPDATE":
                     case "-DELETE":
                         Inputs.Command = (Commands)Enum.Parse(typeof(Commands), inp.Remove(0, 1).ToUpper());
@@ -98,23 +99,39 @@ namespace console_csharp_trustframeworkpolicy
                             break;
                         }
                     case Commands.GET:
-                        // Get a specific policy using "GET /trustFrameworkPolicies/{id}"
-                        request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
-                        break;
+                        {
+                            // Get a specific policy using "GET /trustFrameworkPolicies/{id}"
+                            request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
+                            var response = SendRequest(request);
+                            SavePolicyToFile(response);
+                            break;
+                        }
                     case Commands.CREATE:
-                        // Create a policy using "POST /trustFrameworkPolicies" with XML in the body
-                        string xml = System.IO.File.ReadAllText(Inputs.Path);
-                        request = UserMode.HttpPost(Constants.TrustFrameworkPolicesUri, xml);
-                        break;
+                        {
+                            // Create a policy using "POST /trustFrameworkPolicies" with XML in the body
+                            string xml = System.IO.File.ReadAllText(Inputs.Path);
+                            request = UserMode.HttpPost(Constants.TrustFrameworkPolicesUri, xml);
+                            var response = SendRequest(request);
+                            PrintGeneric("Create operation", response);
+                            break;
+                        }
                     case Commands.UPDATE:
-                        // Update using "PUT /trustFrameworkPolicies/{id}" with XML in the body
-                        xml = System.IO.File.ReadAllText(Inputs.Path);
-                        request = UserMode.HttpPutID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId, xml);
-                        break;
+                        {
+                            // Update using "PUT /trustFrameworkPolicies/{id}" with XML in the body
+                            string xml = System.IO.File.ReadAllText(Inputs.Path);
+                            request = UserMode.HttpPutID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId, xml);
+                            var response = SendRequest(request);
+                            PrintGeneric("Update operation", response);
+                            break;
+                        }
                     case Commands.DELETE:
-                        // Delete using "DELETE /trustFrameworkPolicies/{id}"
-                        request = UserMode.HttpDeleteID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
-                        break;
+                        {
+                            // Delete using "DELETE /trustFrameworkPolicies/{id}"
+                            request = UserMode.HttpDeleteID(Constants.TrustFrameworkPolicyByIDUri, Inputs.PolicyId);
+                            var response = SendRequest(request);
+                            PrintGeneric("Delete operation", response);
+                            break;
+                        }
                     default:
                         return;
                 }
@@ -124,6 +141,39 @@ namespace console_csharp_trustframeworkpolicy
                 Print(request);
                 Console.WriteLine("\nError {0} {1}", e.Message, e.InnerException != null ? e.InnerException.Message : "");
             }
+        }
+
+        /// <summary>
+        /// Prints the generic.
+        /// </summary>
+        /// <param name="ops">The v.</param>
+        /// <param name="response">The response.</param>
+        private static void PrintGeneric(string ops, HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Error Calling the Graph API HTTP Status={0}", response.StatusCode);
+                return;
+            }
+
+            Console.WriteLine($"{ops} completes successfully");
+
+        }
+
+        /// <summary>
+        /// Saves the policy to file.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        private static void SavePolicyToFile(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Error Calling the Graph API HTTP Status={0}", response.StatusCode);
+                return;
+            }
+
+            string content = response.Content.ReadAsStringAsync().Result;
+            File.WriteAllText(Inputs.Path, content);
         }
 
         /// <summary>
