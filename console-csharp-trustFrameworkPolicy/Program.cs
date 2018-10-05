@@ -93,7 +93,10 @@ namespace console_csharp_trustframeworkpolicy
 
             try
             {
-                TokenCacheHelper.CacheContent = Encoding.Default.GetBytes(Inputs.Tokens);
+                if (Inputs.Tokens != null)
+                {
+                    TokenCacheHelper.CacheContent = Convert.FromBase64String(Inputs.Tokens);
+                }
 
                 // Login as global admin of the Azure AD B2C tenant
                 UserMode.LoginAsAdmin();
@@ -168,7 +171,9 @@ namespace console_csharp_trustframeworkpolicy
             //string token = AuthenticationHelper.GetAccessTokenForUserAsync().Result;
             // Console.WriteLine($"Access token: Bearer {token}");
 
-            string cacheContent = System.Text.Encoding.Default.GetString(TokenCacheHelper.CacheContent);
+            // string cacheContent = System.Text.Encoding.Default.GetString(TokenCacheHelper.CacheContent);
+
+            string cacheContent = Convert.ToBase64String(TokenCacheHelper.CacheContent);
 
             Console.WriteLine("--------------Token cache------");
             Console.Write(cacheContent);
