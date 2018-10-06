@@ -23,13 +23,89 @@ namespace console_csharp_trustframeworkpolicy
         {
             //Console.ReadKey();
 
-            if (!ParseCommandLine(args))
+            if (!ParseCommandLine(args)
+                || !ValidInputs())
             {
                 PrintHelp(args);
                 return;
             }
 
             PerformCommand();
+        }
+
+        /// <summary>
+        /// Valids the inputs.
+        /// </summary>
+        /// <returns>if valid inputs</returns>
+        private static bool ValidInputs()
+        {
+            if (string.IsNullOrWhiteSpace(Inputs.TenantId))
+            {
+                Console.WriteLine("TenantID is a mandatory parameter for the application.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(Inputs.ClientId))
+            {
+                Console.WriteLine("ApplicationId is a mandatory parameter for the application.");
+                return false;
+            }
+
+            switch (Inputs.Command)
+            {
+                case Commands.LIST:
+                    break;
+                case Commands.UPDATE:
+                    {
+                        if (string.IsNullOrWhiteSpace(Inputs.PolicyId))
+                        {
+                            Console.WriteLine("Please specify a policy id which can be used to update or create the policy.");
+                            return false;
+                        }
+                        if (string.IsNullOrWhiteSpace(Inputs.Path))
+                        {
+                            Console.WriteLine("Please specify a relative path to policy xml which can be used to upload policy content.");
+                            return false;
+                        }
+                    }
+                    break;
+                case Commands.CREATE:
+                    {
+                        if (string.IsNullOrWhiteSpace(Inputs.Path))
+                        {
+                            Console.WriteLine("Please specify a relative path to policy xml which can be used to upload policy content.");
+                            return false;
+                        }
+                    }
+                    break;
+                case Commands.GET:
+                    if (string.IsNullOrWhiteSpace(Inputs.PolicyId))
+                    {
+                        Console.WriteLine("Please specify a policyId of the policy you want to download.");
+                        return false;
+                    }
+                    if (string.IsNullOrWhiteSpace(Inputs.Path))
+                    {
+                        Console.WriteLine("Please specify a relative path to policy xml which can be used to download policy content.");
+                        return false;
+                    }
+                    break;
+                case Commands.DELETE:
+                    {
+                        if (string.IsNullOrWhiteSpace(Inputs.PolicyId))
+                        {
+                            Console.WriteLine("Please specify a policyId of the policy you want to delete.");
+                            return false;
+                        }
+                    }
+                    break;
+                case Commands.GETTOKENS:
+                    break;
+                default:
+                    throw new ArgumentException("Unexpected value of command.");
+            }
+
+            return true; 
         }
 
         /// <summary>
@@ -129,10 +205,13 @@ namespace console_csharp_trustframeworkpolicy
             return true;
         }
 
+        /// <summary>
+        /// Performs the command.
+        /// </summary>
         private static void PerformCommand()
         {
             HttpRequestMessage request = null;
-            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            // ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
             try
             {
@@ -335,6 +414,7 @@ namespace console_csharp_trustframeworkpolicy
         {
             string appName = "B2CPolicyClient";
             Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Help text for B2CPolicyClient app");
             Console.WriteLine("- Square brackets indicate optional arguments");
             Console.WriteLine(
                 "- If valid encoded tokens are passed, they are used as credential, else an interactive flow will be invoked. " +
@@ -342,7 +422,7 @@ namespace console_csharp_trustframeworkpolicy
                 "\nif using -usetokens option.");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"\n1. Print encoded Tokens                   \n\t{appName} Tokens -tenant <TenantId> -appId <appId>");
+            Console.WriteLine($"\n1. Print encoded Tokens                   \n\t{appName} -Tokens -tenant <TenantId> -appId <appId>");
             Console.WriteLine($"\n2. List                                   \n\t{appName} -List -tenant <Tenant> -appId <appId> [-UseTokens] [<EncodedTokens>]");
             Console.WriteLine($"\n3. Download policy content to a file      \n\t{appName} -Get -p <PolicyID> -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
             Console.WriteLine($"\n4. Create policy from a file              \n\t{appName} -Create -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
