@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace console_csharp_trustframeworkpolicy
 {
+    /// <summary>
+    /// Input commands
+    /// </summary>
     internal enum Commands
     {
         LIST,

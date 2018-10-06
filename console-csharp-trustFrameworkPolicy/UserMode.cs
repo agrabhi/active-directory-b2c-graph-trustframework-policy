@@ -51,7 +51,7 @@ namespace console_csharp_trustframeworkpolicy
         public static HttpRequestMessage HttpGet(string uri)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            AuthenticationHelper.AddHeaders(request);
+            AuthenticationHelper.AddAuthorizationHeaders(request);
             return request;
         }
 
@@ -59,7 +59,7 @@ namespace console_csharp_trustframeworkpolicy
         {
             string uriWithID = String.Format(uri, id);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
+            AuthenticationHelper.AddAuthorizationHeaders(request);
             return request;
         }
 
@@ -67,7 +67,7 @@ namespace console_csharp_trustframeworkpolicy
         {
             string uriWithID = String.Format(uri, id);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
+            AuthenticationHelper.AddAuthorizationHeaders(request);
             request.Content = new StringContent(xml, Encoding.UTF8, "application/xml");
             return request;
         }
@@ -75,7 +75,7 @@ namespace console_csharp_trustframeworkpolicy
         public static HttpRequestMessage HttpPost(string uri, string xml)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            AuthenticationHelper.AddHeaders(request);
+            AuthenticationHelper.AddAuthorizationHeaders(request);
             request.Content = new StringContent(xml, Encoding.UTF8, "application/xml");
             return request;
         }
@@ -84,7 +84,7 @@ namespace console_csharp_trustframeworkpolicy
         {
             string uriWithID = String.Format(uri, id);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
+            AuthenticationHelper.AddAuthorizationHeaders(request);
             return request;
         }
 

@@ -10,28 +10,49 @@ using active_directory_wpf_msgraph_v2;
 
 namespace console_csharp_trustframeworkpolicy
 {
-    class AuthenticationHelper
+    /// <summary>
+    /// Authentication helper class
+    /// </summary>
+    internal static class AuthenticationHelper
     {
         // The test endpoint currently does not require a specific scope.
-        // By public preview, this API will require Policy.ReadWrite.All permission as an admin-only scope,
+        // By public preview, this API will require Policy.ReadWrite.All permission as an admin-only role,
         // so authorization will fail if you sign in with a non-admin account.
-        // For now, this API is only accessible on tenants that have been whitelisted
-        public static string[] Scopes = { "User.Read" };
+        // For now, this API is only accessible on tenants that have been allow listed
+        private static string[] Scopes = { "User.Read" };
 
-        public static PublicClientApplication IdentityClientApp = new PublicClientApplication(
-            Inputs.ClientId,
-            string.Format(Constants.AuthorityUriFormat, Inputs.TenantId),
-            TokenCacheHelper.GetUserCache());
-
-        public static string AccessTokenForUser = null;
-        public static DateTimeOffset Expiration;
-
+        // Using public client flow
+        private static PublicClientApplication IdentityClientApp = null;
+        private static string AccessTokenForUser = null;
+        private static DateTimeOffset Expiration;
         private static GraphServiceClient graphClient = null;
 
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        public static void Init(string tenantId, string clientId)
+        {
+            // Reply Url. If created from app reg portal, this is by default one of thh reply Urls. else it needs to be defined manually
+            string replyUrl = string.Format(Constants.AuthorityUriFormat, tenantId);
+
+            IdentityClientApp = new PublicClientApplication(
+                clientId,
+                replyUrl,
+                TokenCacheHelper.GetUserCache());
+        }
+
+        /// <summary>
         // Get an access token for the given context and resourceId. An attempt is first made to 
         // acquire the token silently. If that fails, then we try to acquire the token by prompting the user.
+        /// </summary>
+        /// <returns>Client</returns>
         public static GraphServiceClient GetAuthenticatedClientForUser()
         {
+            if (IdentityClientApp == null)
+            {
+                Debug.WriteLine("Call Init first");
+            }
+
             // Create Microsoft Graph client.
             try
             {
@@ -56,9 +77,13 @@ namespace console_csharp_trustframeworkpolicy
             return graphClient;
         }
 
-        public static void AddHeaders(HttpRequestMessage requestMessage)
+        /// <summary>
+        /// Adds the headers.
+        /// </summary>
+        /// <param name="requestMessage">The request message.</param>
+        public static void AddAuthorizationHeaders(HttpRequestMessage requestMessage)
         {
-            if(AccessTokenForUser == null)
+            if (AccessTokenForUser == null)
             {
                 Debug.WriteLine("Call GetAuthenticatedClientForUser first");
             }
@@ -78,13 +103,13 @@ namespace console_csharp_trustframeworkpolicy
         /// Get Token for User.
         /// </summary>
         /// <returns>Token for user.</returns>
-        public static async Task<string> GetAccessTokenForUserAsync()
+        private static async Task<string> GetAccessTokenForUserAsync()
         {
             AuthenticationResult authResult;
             try
             {
                 authResult = await IdentityClientApp.AcquireTokenSilentAsync(Scopes, IdentityClientApp.Users.First());
-                AccessTokenForUser = authResult.AccessToken;                
+                AccessTokenForUser = authResult.AccessToken;
             }
 
             catch (Exception)
@@ -100,19 +125,5 @@ namespace console_csharp_trustframeworkpolicy
 
             return AccessTokenForUser;
         }
-
-        /// <summary>
-        /// Signs the user out of the service.
-        /// </summary>
-        public static void SignOut()
-        {
-            foreach (var user in IdentityClientApp.Users)
-            {
-                IdentityClientApp.Remove(user);
-            }
-            graphClient = null;
-            AccessTokenForUser = null;
-        }
-
     }
 }

@@ -29,7 +29,7 @@ namespace console_csharp_trustframeworkpolicy
                 PrintHelp(args);
                 return;
             }
-
+            
             PerformCommand();
         }
 
@@ -217,6 +217,7 @@ namespace console_csharp_trustframeworkpolicy
 
             try
             {
+                AuthenticationHelper.Init(Inputs.TenantId, Inputs.ClientId);
                 if (Inputs.Tokens != null)
                 {
                     TokenCacheHelper.CacheContent = Convert.FromBase64String(Inputs.Tokens);
@@ -421,7 +422,8 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine(
                 "- If valid encoded tokens are passed, they are used as credential, else an interactive flow will be invoked. " +
                 "\n- The encoded tokens are retrieved using Tokens command. The tokens in output of the command is supplied back " +
-                "\nif using -usetokens option.");
+                "\nif using -usetokens option." +
+                "- The app (with the appId) will work out of box if created from app reg portal. Else it needs to have reply url = https://login.microsoftonline.com/{tenantName.onmicrosoft.com}/oauth2/v2.0/token");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"\n1. Print encoded Tokens                   \n\t{appName} -Tokens -tenant <TenantId> -appId <appId>");
