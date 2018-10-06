@@ -11,6 +11,7 @@ This sample demonstrates the following:
 * **Update** a custom policy
 * **Delete** a custom policy
 * **List** all custom policies
+* **CI/CD** : Integrate into CI/CD pipeline for your build system.
 
 ## Getting Started
 
@@ -35,14 +36,11 @@ This sample requires the following:
 1. Sign in to the [Application Registration Portal](https://apps.dev.microsoft.com/) using your Microsoft account.
 1. Select **Add an app**, and enter a friendly name for the application (such as **Console App for Microsoft Graph (Delegated perms)**). Click **Create**.
 1. On the application registration page, select **Add Platform**. Select the **Native App** tile and save your change. The **delegated permissions** operations in this sample use permissions that are specified in the AuthenticationHelper.cs file. This is why you don't need to assign any permissions to the app on this page.
-1. Open the solution and then the Constants.cs file in Visual Studio. 
-1. Make the **Application Id** value for this app the value of the **ClientIdForUserAuthn** string.
-1. Update **Tenant** with the name of your tenant.  (for example: myb2ctenantname.onmicrosoft.com)
+1. Note **Application Id** value for this app 
 
 #### Build and run the sample
 
 1. Open the sample solution in Visual Studio.
-1. Replace the tenant name and application id in Constants.cs by following [Register the delegated permissions application](#register-the-delegated-permissions-application)
 1. Build the sample.
 1. Using cmd or PowerShell, navigate to <Path to sample code>/bin/Debug. Run the executable **B2CPolicyClient.exe**.
 1. Sign in as a global administrator.  (for example: admin@myb2ctenant.onmicrosoft.com)
@@ -50,6 +48,65 @@ This sample requires the following:
 
 >[!NOTE]
 > If you see `Unauthorized. Access to this Api requires feature: EnableIEFPoliciesGraphApis` then your tenant has not been enabled for this private preview.  Please see [Prerequisites](#Prerequisites).
+
+#### Sample usage
+
+Available in help text also
+
+* Square brackets indicate optional arguments
+* If valid encoded tokens are passed, they are used as credential, else an interactive flow will be invoked.
+* The encoded tokens are retrieved using Tokens command. The tokens in output of the command is supplied back if using -usetokens option.
+* The app (with the appId) will work out of box if created from app reg portal. Else it needs to have reply url = https://login.microsoftonline.com/{tenantName.onmicrosoft.com}/oauth2/v2.0/token
+
+1. Print encoded Tokens
+
+        B2CPolicyClient -Tokens -tenant <TenantId> -appId <appId>
+
+2. List
+
+          B2CPolicyClient -List -tenant <Tenant> -appId <appId> [-UseTokens] [<EncodedTokens>]
+
+3. Download policy content to a file
+
+        B2CPolicyClient -Get -p <PolicyID> -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]
+
+4. Create policy from a file
+
+        B2CPolicyClient -Create -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]
+
+5. Update or create a policy from a file
+
+        B2CPolicyClient -Update -tenant <TenantId> -appId <appId> -p <PolicyId> -path <filePath> [-UseTokens] [<EncodedTokens>]
+
+6. Delete
+
+        B2CPolicyClient -Delete -tenant <TenantId> -appId <appId> -p <PolicyId> [-UseTokens] [<EncodedTokens>]
+
+7. Help
+
+        B2CPolicyClient -Help
+
+## How to use the app to deploy policies as part of CI/CD pipeline in VSTS (Azure DevOps)
+
+1. Checkin the exe for this tool along with dependent binaries in your project.  
+2. Also checkin your policies xml files to your version control system. 
+3. On your local machine, run the following command in the direcotry where exe is located
+
+        B2CPolicyClient -Tokens -tenant <TenantId> -appId <appId>
+4. Now go to home page of your project in VSTS.   
+5. If you dont have one already, add one release peipeline to your project.
+6. Go to variables tab, and add one secret variable, named **encoddedToken**. VSTS stores the secret variables as encrypted. The value of the variable will be from the output of the step 3.
+7. Make sure to clear screen of command window on your local machine to remove the encoded tokens.
+8. Define more variables in release pipeline such as tenantId, appId, susiPolicyId. These variables don't need to be secret.
+9. In the release pipeline, create a Command Line Task.
+10. Fill in the following values. Make sure to replace the policy xml path with the one for your scenario. 
+
+        * Choose version 1.*
+        * Enter a display name of your choice.
+        * Tools = B2CPolicyClient.exe
+        * Arguments = -Update -TenantId $(tenantId) -appId $(appId) -p $(susiPolicyId) -path ..\B2CAssets\CustomPolicies\SignUpOrSignin.xml -UseTokens $(encodedTokens) 
+        * In advance options-> set the working folder as the folder where you checked in the exe of the tool.
+11. Save and Queue the build. and check the result of the task. The output should say **Update operation completed successfully**
 
 ## Questions and comments
 
