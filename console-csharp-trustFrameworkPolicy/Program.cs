@@ -39,6 +39,11 @@ namespace console_csharp_trustframeworkpolicy
         /// <returns>If valid command line arguments were passed and execution should continue</returns>
         private static bool ParseCommandLine(string[] args)
         {
+            if (args.Length == 0)
+            {
+                return false;
+            }
+
             for (int i = 0; i < args.Length; i++)
             {
                 string inputArg = args[i];
@@ -331,15 +336,19 @@ namespace console_csharp_trustframeworkpolicy
             string appName = "B2CPolicyClient";
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("- Square brackets indicate optional arguments");
+            Console.WriteLine(
+                "- If valid encoded tokens are passed, they are used as credential, else an interactive flow will be invoked. " +
+                "\n- The encoded tokens are retrieved using Tokens command. The tokens in output of the command is supplied back " +
+                "\nif using -usetokens option.");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"Print encoded Tokens                   : {appName} Tokens -tenant <TenantId> -appId <appId>");
-            Console.WriteLine($"List                                   : {appName} -List -tenant <Tenant> -appId <appId> [-UseTokens] [<EncodedTokens>]");
-            Console.WriteLine($"Download policy content to a file      : {appName} -Get -p <PolicyID> -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
-            Console.WriteLine($"Create policy from a file              : {appName} -Create -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
-            Console.WriteLine($"Update or create a policy from a file  : {appName} -Update -tenant <TenantId> -appId <appId> -p <PolicyId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
-            Console.WriteLine($"Delete                                 : {appName} -Delete -tenant <TenantId> -appId <appId> -p <PolicyId> [-UseTokens] [<EncodedTokens>]");
-            Console.WriteLine($"Help                                   : {appName} -Help");
+            Console.WriteLine($"\n1. Print encoded Tokens                   \n\t{appName} Tokens -tenant <TenantId> -appId <appId>");
+            Console.WriteLine($"\n2. List                                   \n\t{appName} -List -tenant <Tenant> -appId <appId> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"\n3. Download policy content to a file      \n\t{appName} -Get -p <PolicyID> -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"\n4. Create policy from a file              \n\t{appName} -Create -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"\n5. Update or create a policy from a file  \n\t{appName} -Update -tenant <TenantId> -appId <appId> -p <PolicyId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"\n6. Delete                                 \n\t{appName} -Delete -tenant <TenantId> -appId <appId> -p <PolicyId> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"\n7. Help                                   \n\t{appName} -Help");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
         }
