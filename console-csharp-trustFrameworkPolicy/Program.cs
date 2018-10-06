@@ -10,77 +10,115 @@ using System.Threading.Tasks;
 
 namespace console_csharp_trustframeworkpolicy
 {
+    /// <summary>
+    /// Program entry point class
+    /// </summary>
     class Program
     {
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         static void Main(string[] args)
         {
-            Console.ReadKey();
-
-            // validate parameters
-            if (!CheckValidParameters(args))
-            {
-                return;
-            }
+            //Console.ReadKey();
 
             if (!ParseCommandLine(args))
             {
+                PrintHelp(args);
                 return;
             }
 
             PerformCommand();
         }
 
+        /// <summary>
+        /// Parses the command line.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <returns>If valid command line arguments were passed and execution should continue</returns>
         private static bool ParseCommandLine(string[] args)
         {
             for (int i = 0; i < args.Length; i++)
             {
-                string inp = args[i];
-                switch (inp.ToUpper())
+                string inputArg = args[i];
+                switch (inputArg.ToUpper())
                 {
+                    // Main operations
                     case "-LIST":
                     case "-CREATE":
                     case "-GET":
                     case "-UPDATE":
                     case "-DELETE":
                     case "-GETTOKENS":
-                        Inputs.Command = (Commands)Enum.Parse(typeof(Commands), inp.Remove(0, 1).ToUpper());
+                        Inputs.Command = (Commands)Enum.Parse(typeof(Commands), inputArg.Remove(0, 1).ToUpper());
                         break;
 
+                    case "-T":
                     case "-TENANTID":
-                        // TODO: Length check here
-                        i++;
+                        if (!OneMoreElementPresent(args.Length, i, "TenantId"))
+                        {
+                            return false;
+                        }
+                        i++;                        
                         Inputs.TenantId = args[i];
                         break;
 
                     case "-USETOKENS":
-                        // TODO: Length check here
+                        if (!OneMoreElementPresent(args.Length, i, "Tokens"))
+                        {
+                            return false;
+                        }
                         i++;
                         Inputs.Tokens = args[i];
                         break;
 
                     case "-P":
                     case "-POLICY":
-                        // TODO: Length check here
+                        if (!OneMoreElementPresent(args.Length, i, "PolicyId"))
+                        {
+                            return false;
+                        }
                         i++;
                         Inputs.PolicyId = args[i];
                         break;
 
                     case "-PATH":
-                        // TODO: Length check here
+                        if (!OneMoreElementPresent(args.Length, i, "Path"))
+                        {
+                            return false;
+                        }
                         i++;
                         Inputs.Path = args[i];
                         break;
 
                     case "-APPID":
-                        // TODO: Length check here
+                        if (!OneMoreElementPresent(args.Length, i, "ApplicationId"))
+                        {
+                            return false;
+                        }
                         i++;
                         Inputs.ClientId = args[i];
                         break;
 
                     default:
-                        PrintHelp(args);
                         return false;                 
                 }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks the one more element present.
+        /// </summary>
+        /// <param name="argName">corresponding argument</param>
+        private static bool OneMoreElementPresent(int arrayLength, int i, string argName)
+        {
+            if ((i + 1) >= arrayLength)
+            {
+                Console.WriteLine($"{argName} is missing.");
+                return false;
             }
 
             return true;
@@ -258,12 +296,6 @@ namespace console_csharp_trustframeworkpolicy
             return response.Result;
         }
 
-        public static bool CheckValidParameters(string[] args)
-        {
-            // TODO: Validate inputs
-            return true;
-        }
-
         public static void Print(Task<HttpResponseMessage> responseTask)
         {
             responseTask.Wait();
@@ -290,6 +322,10 @@ namespace console_csharp_trustframeworkpolicy
             }
         }
 
+        /// <summary>
+        /// Prints the help.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         private static void PrintHelp(string[] args)
         {
             string appName = "B2CPolicyClient";
@@ -297,25 +333,15 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("- Square brackets indicate optional arguments");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Tokens                       : {0} Tokens -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("List                         : {0} -List -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("Get                          : {0} -Get -p [PolicyID] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("                             : {0} -Get -p B2C_1A_PolicyName -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("Create                       : {0} -Create -path [RelativePathToXML] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("                             : {0} -Create -path policytemplate.xml -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("Update                       : {0} -Update -p [PolicyID] [RelativePathToXML] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("                             : {0} -Update -p B2C_1A_PolicyName -path updatepolicy.xml -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("Delete                       : {0} -Delete -p [PolicyID] -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("                             : {0} -Delete -p B2C_1A_PolicyName -tenant {Tenant} -appId {appId} -replyUri {replyUri}", appName);
-            Console.WriteLine("Help                         : {0} -Help", appName);
+            Console.WriteLine($"Print encoded Tokens                   : {appName} Tokens -tenant <TenantId> -appId <appId>");
+            Console.WriteLine($"List                                   : {appName} -List -tenant <Tenant> -appId <appId> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"Download policy content to a file      : {appName} -Get -p <PolicyID> -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"Create policy from a file              : {appName} -Create -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"Update or create a policy from a file  : {appName} -Update -tenant <TenantId> -appId <appId> -p <PolicyId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"Delete                                 : {appName} -Delete -tenant <TenantId> -appId <appId> -p <PolicyId> [-UseTokens] [<EncodedTokens>]");
+            Console.WriteLine($"Help                                   : {appName} -Help");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
-
-            if(args.Length == 0)
-            {
-                Console.WriteLine("[press any key to exit]");
-                Console.ReadKey();
-            }
         }
     }
 }
