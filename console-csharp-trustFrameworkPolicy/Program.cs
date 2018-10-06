@@ -39,6 +39,7 @@ namespace console_csharp_trustframeworkpolicy
         /// <returns>if valid inputs</returns>
         private static bool ValidInputs()
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             if (string.IsNullOrWhiteSpace(Inputs.TenantId))
             {
                 Console.WriteLine("TenantID is a mandatory parameter for the application.");
@@ -105,6 +106,7 @@ namespace console_csharp_trustframeworkpolicy
                     throw new ArgumentException("Unexpected value of command.");
             }
 
+            Console.ForegroundColor = ConsoleColor.White;
             return true; 
         }
 
@@ -414,7 +416,7 @@ namespace console_csharp_trustframeworkpolicy
         {
             string appName = "B2CPolicyClient";
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Help text for B2CPolicyClient app");
+            Console.WriteLine("\n\nHelp text for B2CPolicyClient app--------------------------------------------------");
             Console.WriteLine("- Square brackets indicate optional arguments");
             Console.WriteLine(
                 "- If valid encoded tokens are passed, they are used as credential, else an interactive flow will be invoked. " +
