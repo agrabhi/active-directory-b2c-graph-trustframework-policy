@@ -426,7 +426,7 @@ namespace console_csharp_trustframeworkpolicy
                 "- The app (with the appId) will work out of box if created from app reg portal. Else it needs to have reply url = https://login.microsoftonline.com/{tenantName.onmicrosoft.com}/oauth2/v2.0/token");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"\n1. Print encoded Tokens                   \n\t{appName} -Tokens -tenant <TenantId> -appId <appId>");
+            Console.WriteLine($"\n1. Print encoded Tokens                   \n\t{appName} -GetTokens -tenant <TenantId> -appId <appId>");
             Console.WriteLine($"\n2. List                                   \n\t{appName} -List -tenant <Tenant> -appId <appId> [-UseTokens] [<EncodedTokens>]");
             Console.WriteLine($"\n3. Download policy content to a file      \n\t{appName} -Get -p <PolicyID> -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");
             Console.WriteLine($"\n4. Create policy from a file              \n\t{appName} -Create -tenant <TenantId> -appId <appId> -path <filePath> [-UseTokens] [<EncodedTokens>]");

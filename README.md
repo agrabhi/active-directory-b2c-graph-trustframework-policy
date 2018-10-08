@@ -60,7 +60,7 @@ Available in help text also
 
 1. Print encoded Tokens
 
-        B2CPolicyClient -Tokens -tenant <TenantId> -appId <appId>
+        B2CPolicyClient -GetTokens -tenant <TenantId> -appId <appId>
 
 2. List
 
