@@ -85,29 +85,6 @@ Available in help text also
 7. Help
 
         B2CPolicyClient -Help
-
-## How to use the app to deploy policies as part of CI/CD pipeline in VSTS (Azure DevOps)
-
-1. Checkin the exe for this tool along with dependent binaries in your project.  
-2. Also checkin your policies xml files to your version control system. 
-3. On your local machine, run the following command in the direcotry where exe is located
-
-        B2CPolicyClient -Tokens -tenant <TenantId> -appId <appId>
-4. Now go to home page of your project in VSTS.   
-5. If you dont have one already, add one release peipeline to your project.
-6. Go to variables tab, and add one secret variable, named **encoddedToken**. VSTS stores the secret variables as encrypted. The value of the variable will be from the output of the step 3.
-7. Make sure to clear screen of command window on your local machine to remove the encoded tokens.
-8. Define more variables in release pipeline such as tenantId, appId, susiPolicyId. These variables don't need to be secret.
-9. In the release pipeline, create a Command Line Task.
-10. Fill in the following values. Make sure to replace the policy xml path with the one for your scenario. 
-
-        * Choose version 1.*
-        * Enter a display name of your choice.
-        * Tools = B2CPolicyClient.exe
-        * Arguments = -Update -TenantId $(tenantId) -appId $(appId) -p $(susiPolicyId) -path ..\B2CAssets\CustomPolicies\SignUpOrSignin.xml -UseTokens $(encodedTokens) 
-        * In advance options-> set the working folder as the folder where you checked in the exe of the tool.
-11. Save and Queue the build. and check the result of the task. The output should say **Update operation completed successfully**
-
 ## Questions and comments
 
 Questions about this sample should be posted to [Stack Overflow](https://stackoverflow.com/questions/tagged/azure-ad-b2c). Make sure that your questions or comments are tagged with [azure-ad-b2c].
